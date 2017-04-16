@@ -1,0 +1,16 @@
+body {
+    text-align: center;
+}
+
+div{
+	position: absolute;
+	left: 20%
+}
+
+
+div ul li{
+	list-style: none;
+}
+div ul li img{
+	height: 100px;
+}
