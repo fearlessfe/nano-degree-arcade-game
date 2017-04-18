@@ -12,12 +12,17 @@
 //人物的y值和虫子的类似，设置为-23+83*n（n=0,1,2,3,4,5）;根据视频，将人物的初始位置设置为第六行的
 //中间位置，即（202，-23+83*5）
 
+
+'use strict'  //整个函数采用严格模式
+
+
 function randomOne2Three(){
     //返回1或2或3
     return Math.floor(Math.random()*3+1);
 }
 
-
+var stepX=101;//存储x，y两个方向的步长
+var stepY=83;
 
 // 这是我们的玩家要躲避的敌人 
 var Enemy = function(y) {
@@ -27,7 +32,7 @@ var Enemy = function(y) {
     // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松的加载文件
     this.sprite = 'images/enemy-bug.png';
     this.y=y;
-    this.x=-101;
+    this.x=-stepX;
     this.speed=100;
    
 };
@@ -39,8 +44,8 @@ Enemy.prototype.update = function(dt) {
     // 都是以同样的速度运行的
     this.x+=this.speed*dt*randomOne2Three();
     if(this.x>600){
-        this.x=-101;
-        this.y=-23+83*randomOne2Three();
+        this.x=-stepX;
+        this.y=-23+stepY*randomOne2Three();
     }
 };
 
@@ -54,39 +59,26 @@ Enemy.prototype.render = function() {
 var Player=function(){
     
     this.sprite='images/char-boy.png';
-    // this.cat_girl='../images/char-cat-girl.png';
-    // this.horn_girl='../images/char-horn-girl.png';
-    // this.pink_girl='../images/char-pink-girl.png';
-    // this.princess_girl='../images/char-princess-girl.png';
-    this.x=202;
-    this.y=-23+83*5;  
+    this.x=2*stepX;
+    this.y=-23+stepY*5;
+  
 }
 Player.prototype=Object.create(Enemy.prototype);
 Player.prototype.constructor=Player;
 Player.prototype.update=function(){
-    
+   
 }
 Player.prototype.render=function(){
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 Player.prototype.handleInput=function(allowedKeys){
     switch(allowedKeys){
-        case 'left':if(this.x<=0){
-                        this.x=0;
-                    }else{
-                        this.x-=101;
-                    }break;
-        case 'right':if(this.x>=400){
-                        this.x=404;
-                    }else{
-                        this.x+=101;
-                    }break;
-
-
-
-      
-        case 'up':this.y-=83;
-                    if(this.y<=55){
+        case 'left':(this.x<=0)?this.x=0 : this.x-=stepX;
+                    break;
+        case 'right':(this.x>=400)?this.x=404 : this.x+=stepX;
+                     break;  
+        case 'up':this.y-=stepY;
+                  if(this.y<=55){
                         this.y=392;
                         this.x=202;
                         alert("恭喜，你赢了！");
@@ -96,11 +88,8 @@ Player.prototype.handleInput=function(allowedKeys){
                        
                     break; 
                     
-        case 'down':if(this.y>=55+83*4){
-                        this.y=55+83*4;
-                     }else{
-                        this.y+=83;
-                     }
+        case 'down':(this.y>=55+stepY*4)?this.y=55+stepY*4 : this.y+=stepY;
+
                     
 
                     break;
@@ -112,7 +101,7 @@ Player.prototype.handleInput=function(allowedKeys){
 
 var allEnemies=[];
 for(var i=0;i<3;i++){
-    var enemy=new Enemy(-23+83*randomOne2Three());
+    var enemy=new Enemy(-23+stepY*randomOne2Three());
     allEnemies.push(enemy);
 }
 var player=new Player();
@@ -131,11 +120,3 @@ document.addEventListener('keyup', function(e) {
 
 
 
-// 1.在提供的范本 - Enemy 类(Class)的基础上创建 Player 类
-// 2.填 Player 实例(instance)起始的位置信息(提示: x? y?)
-// 3.用 Player 类创造一个player实例 (你就会看到游戏场景被启动了)
-// 4.使用 Enemy 类创造多个 enemy 实例
-// 5.填入 enemy 实例的起始位置信息
-// 6.填入 enemy 实例的移动函数(function)
-// 7.建立 player 的输入(input)函数 (Brian注: 以控制player的上下左右移动)
-// 8.建立检测碰撞的函数
